@@ -1,0 +1,2 @@
+dn: olcOverlay={0}sssvlv,olcDatabase={2}hdb,cn=config
+objectClass: olcSssVlvConfig
