@@ -145,31 +145,29 @@ class SSSRequestControl(RequestControl):
     def __init__(self, ordering_rules, controlType=SSS_REQUEST_CONTROL_OID,
             **kwargs):
         RequestControl.__init__(self, controlType=controlType, **kwargs)
-        self.sort_keys = []
+        self.ordering_rules = ordering_rules
         if isinstance(ordering_rules, basestring):
             ordering_rules = [ordering_rules]
         for rule in ordering_rules:
-            assert isinstance(rule, basestring), 'ordering rules must be strings'
-            sort_key = []
-            if rule.startswith('-'):
-                sort_key.append(bool(True))
-                rule = rule[1:]
             rule = rule.split(':')
-            sort_key.insert(0, unicode(rule[0]))
-            if len(rule) > 1:
-                sort_key.insert(1, unicode(rule[1]))
-            assert len(rule) < 3, 'ordering rules must containt at most one colon'
-            self.sort_keys.append(sort_key)
+            assert len(rule) < 3, 'syntax for ordering rule: [-]<attribute-type>[:ordering-rule]'
 
     def asn1(self):
         p = SortKeyListType()
-        for i, sort_key in enumerate(self.sort_keys):
+        for i, rule in enumerate(self.ordering_rules):
             q = SortKeyType()
-            q.setComponentByName('attributeType', sort_key[0].encode('utf-8'))
-            if len(sort_key) > 1:
-                q.setComponentByName('orderingRule', sort_key[1].encode('utf-8'))
-            if len(sort_key) > 2:
-                q.setComponentByName('reverseOrder', 1 if sort_key[2] else 0)
+            reverse_order = rule.startswith('-')
+            if reverse_order:
+                rule = rule[1:]
+            if ':' in rule:
+                attribute_type, ordering_rule = rule.split(':')
+            else:
+                attribute_type, ordering_rule = rule, None
+            q.setComponentByName('attributeType', attribute_type)
+            if ordering_rule:
+                q.setComponentByName('orderingRule', ordering_rule)
+            if reverse_order:
+                q.setComponentByName('reverseOrder', 1)
             p.setComponentByPosition(i, q)
         return p
 
