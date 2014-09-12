@@ -6,6 +6,8 @@ from ldap.controls import (RequestControl, ResponseControl,
 from pyasn1.type import univ, namedtype, tag, namedval, constraint
 from pyasn1.codec.ber import encoder, decoder
 
+__ALL__ = ['VLVRequestControl', 'VLVResponseControl', 'SSSRequestControl',
+    'SSSResponseControl', 'SSSVLVPagedLDAPObject']
 
 
 class ByOffsetType(univ.Sequence):
