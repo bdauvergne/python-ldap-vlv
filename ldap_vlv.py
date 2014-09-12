@@ -220,20 +220,23 @@ KNOWN_RESPONSE_CONTROLS[SSS_RESPONSE_CONTROL_OID] = SSSResponseControl
 
 
 class SSSVLVPagedLDAPObject(LDAPObject):
-    def result4(self, msgid=ldap.RES_ANY, all=1, timeout=None, add_ctrls=0, add_intermediates=0, add_extop=0, resp_ctrl_classes=None):
+    def result4(self, msgid=ldap.RES_ANY, all=1, timeout=None, add_ctrls=0,
+            add_intermediates=0, add_extop=0, resp_ctrl_classes=None):
       if timeout is None:
         timeout = self.timeout
-      ldap_result = self._ldap_call(self._l.result4,msgid,all,timeout,add_ctrls,add_intermediates,add_extop)
+      ldap_result = self._ldap_call(self._l.result4, msgid, all, timeout,
+              add_ctrls, add_intermediates, add_extop)
       if ldap_result is None:
-          resp_type, resp_data, resp_msgid, resp_ctrls, resp_name, resp_value = (None,None,None,None,None,None)
+          resp_type, resp_data, resp_msgid, resp_ctrls, resp_name, resp_value \
+                  = (None, None, None, None, None, None)
       else:
         if len(ldap_result)==4:
           resp_type, resp_data, resp_msgid, resp_ctrls = ldap_result
-          resp_name, resp_value = None,None
+          resp_name, resp_value = None, None
         else:
           resp_type, resp_data, resp_msgid, resp_ctrls, resp_name, resp_value = ldap_result
         if add_ctrls:
-          resp_data = [ (t,r,DecodeControlTuples(c,resp_ctrl_classes)) for t,r,c in resp_data ]
+          resp_data = [ (t, r, DecodeControlTuples(c, resp_ctrl_classes)) for t,r,c in resp_data ]
       decoded_resp_ctrls = DecodeControlTuples(resp_ctrls,resp_ctrl_classes)
       for ctrl in decoded_resp_ctrls:
           if ctrl.controlType == VLV_RESPONSE_CONTROL_OID:
