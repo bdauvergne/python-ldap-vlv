@@ -253,7 +253,6 @@ class SSSVLVPagedLDAPObject(LDAPObject):
         clientctrls = []
         if ordering:
             serverctrls.append(SSSRequestControl(ordering, criticality=True))
-            print serverctrls[-1].asn1().prettyPrint()
         if offset is not None:
             serverctrls.append(VLVRequestControl(offset=offset,
                 after_count=length, content_count=0, criticality=True,
